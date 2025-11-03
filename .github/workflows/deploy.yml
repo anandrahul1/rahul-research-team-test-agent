@@ -15,7 +15,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: 3.11
+        python-version: '3.11'
     
     - name: Install dependencies
       run: |
@@ -25,18 +25,18 @@ jobs:
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v4
       with:
-        aws-access-key-id: \${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: \${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: us-west-2
     
     - name: Deploy to AgentCore
       run: |
-        echo \"Deploying rahul-research-team-test-agent to AgentCore...\"
+        echo "Deploying rahul-research-team-test-agent to AgentCore..."
         agentcore launch --name rahul-research-team-test-agent
-        echo \"Deployment completed!\"
+        echo "Deployment completed!"
     
     - name: Get deployment status
       run: |
-        echo \"Checking deployment status...\"
+        echo "Checking deployment status..."
         agentcore list
-        echo \"Agent deployment finished!\"
+        echo "Agent deployment finished!"
