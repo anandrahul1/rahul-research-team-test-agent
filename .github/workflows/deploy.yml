@@ -17,19 +17,10 @@ jobs:
       with:
         python-version: '3.11'
     
-    - name: Install dependencies and debug AgentCore
+    - name: Install dependencies
       run: |
         pip install -r requirements.txt
-        echo "Installing bedrock-agentcore..."
         pip install bedrock-agentcore
-        echo "Checking what was installed..."
-        pip list | grep -i agent || echo "No agent packages found"
-        pip list | grep -i bedrock || echo "No bedrock packages found"
-        echo "Checking available commands..."
-        ls -la /opt/hostedtoolcache/Python/3.11.14/x64/bin/ | grep -i agent || echo "No agent commands in bin"
-        echo "Trying python -m approach..."
-        python -m bedrock_agentcore --help || echo "Module approach failed"
-        python -c "import bedrock_agentcore; print('Package imported successfully')" || echo "Import failed"
     
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v4
@@ -38,16 +29,22 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: us-west-2
     
-    - name: Deploy to AgentCore (Simulated)
+    - name: Install AgentCore CLI
+      run: |
+        # Try installing the actual AgentCore CLI
+        curl -L https://github.com/aws/amazon-bedrock-agentcore/releases/latest/download/agentcore-linux-amd64 -o agentcore
+        chmod +x agentcore
+        sudo mv agentcore /usr/local/bin/
+        agentcore --version
+    
+    - name: Deploy to AgentCore
       run: |
         echo "Deploying rahul-research-team-test-agent to AgentCore..."
-        echo "Since AgentCore CLI is not available, simulating deployment..."
-        echo "In a real scenario, this would deploy the agent to AWS AgentCore Runtime"
-        echo "Agent would be available at: https://agentcore.aws.dev/agents/rahul-research-team-test-agent"
+        agentcore deploy --name rahul-research-team-test-agent --source .
         echo "Deployment completed!"
     
     - name: Get deployment status
       run: |
-        echo "Deployment Status: SUCCESS (Simulated)"
-        echo "Agent URL: https://agentcore.aws.dev/agents/rahul-research-team-test-agent"
+        echo "Checking deployment status..."
+        agentcore status rahul-research-team-test-agent
         echo "Agent deployment finished!"
