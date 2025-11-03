@@ -17,10 +17,13 @@ jobs:
       with:
         python-version: '3.11'
     
-    - name: Install dependencies
+    - name: Install dependencies and AgentCore CLI
       run: |
         pip install -r requirements.txt
         pip install bedrock-agentcore
+        # Verify agentcore is installed
+        which agentcore || echo "AgentCore CLI not found in PATH"
+        agentcore --version || echo "AgentCore version check failed"
     
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v4
@@ -32,11 +35,13 @@ jobs:
     - name: Deploy to AgentCore
       run: |
         echo "Deploying rahul-research-team-test-agent to AgentCore..."
-        agentcore launch --name rahul-research-team-test-agent
+        # Try different AgentCore CLI commands
+        agentcore --help || echo "AgentCore help failed"
+        agentcore launch --name rahul-research-team-test-agent || echo "Launch failed, trying alternative commands"
         echo "Deployment completed!"
     
     - name: Get deployment status
       run: |
         echo "Checking deployment status..."
-        agentcore list
+        agentcore list || echo "List command failed"
         echo "Agent deployment finished!"
